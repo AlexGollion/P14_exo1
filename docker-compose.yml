@@ -1,14 +1,38 @@
-version: '3'
 services:
-  postgres:
-    image: postgres:16-alpine
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_db:/var/lib/postgresql/data
+  database:
+    container_name: database_P14
+    image: mysql:8.0
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: critipixel
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    ports:
+      - "4306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  php:
+    container_name: php_P14
+    build:
+      context: ./
+    ports:
+      - 8080:80
+    volumes:
+      - ./default.conf/Default.conf:/etc/apache2/sites-enabled/000-default.conf:ro
+      - ./php.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./:/var/www
+    depends_on:
+      - database
+  phpma:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_P14
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: secret
+      UPLOAD_LIMIT: 20M
+    ports:
+      - 8899:80
 volumes:
-  postgres_db:
-    driver: local
+  mysql_data:
