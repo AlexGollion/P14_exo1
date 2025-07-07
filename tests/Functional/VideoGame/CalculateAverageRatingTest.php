@@ -2,7 +2,7 @@
 
 namespace App\tests\Functionnal\VideoGame;
 
-use phpunit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use App\Model\Entity\VideoGame;
 use App\Model\Entity\Review;
 use App\Model\Entity\User;
