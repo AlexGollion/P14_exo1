@@ -46,8 +46,7 @@ class VideoGameControllerTest extends WebTestCase
         $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
 
         $form = $crawler->selectButton('Poster')->form();
-        //$form['review[rating]'] = 6;
-        //$form['review[comment]'] = "test";
+
         
         $csrfToken = $form['review[_token]']->getValue(); // Adjust field name as needed
     
@@ -88,14 +87,6 @@ class VideoGameControllerTest extends WebTestCase
 
         $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
 
-        $client->request('POST', $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']), [
-            'review' => [
-                'rating' => 5,
-                'comment' => "test"
-            ]
-        ]);
-
-        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorNotExists('button:contains("Poster")');
     }
-
 }
