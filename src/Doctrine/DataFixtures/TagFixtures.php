@@ -6,14 +6,12 @@ use App\Model\Entity\Tag;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Generator;
 
 use function array_fill_callback;
 
 final class TagFixtures extends Fixture 
 {
     public function __construct(
-        private readonly Generator $faker,
     ) {
     }
 

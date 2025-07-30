@@ -11,8 +11,8 @@ use App\Rating\CountRatingsPerValue;
 
 class CountRatingsPerValueTest extends TestCase
 {
-    private $ratingHandler;
-    private $videoGame;
+    private RatingHandler $ratingHandler;
+    private VideoGame $videoGame;
 
     public function setUp(): void
     {
@@ -20,7 +20,7 @@ class CountRatingsPerValueTest extends TestCase
         $this->videoGame = new VideoGame();
     }
 
-    public function testCountRatingsPerValue0()
+    public function testCountRatingsPerValue0(): void
     {
         $this->ratingHandler->countRatingsPerValue($this->videoGame);
         $this->assertSame(0, $this->videoGame->getNumberOfRatingsPerValue()->getNumberOfThree());

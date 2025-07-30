@@ -24,7 +24,7 @@ class Tag
 
     #[Column(unique: true)]
     #[Slug(fields: ['name'])]
-    private string $code;
+    private readonly string $code;
 
     #[NotBlank]
     #[Length(max: 30)]

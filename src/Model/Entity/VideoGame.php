@@ -52,7 +52,7 @@ class VideoGame
 
     #[Column(unique: true)]
     #[Slug(fields: ['title'])]
-    private string $slug;
+    private readonly string $slug;
 
     #[NotBlank]
     #[Column(type: Types::TEXT)]
@@ -78,14 +78,14 @@ class VideoGame
     private NumberOfRatingPerValue $numberOfRatingsPerValue;
 
     /**
-     * @var Collection<Tag>
+     * @var Collection<int, Tag>
      */
     #[ManyToMany(targetEntity: Tag::class)]
     #[JoinTable(name: 'video_game_tags')]
     private Collection $tags;
 
     /**
-     * @var Collection<Review>
+     * @var Collection<int, Review>
      */
     #[OneToMany(targetEntity: Review::class, mappedBy: 'videoGame')]
     private Collection $reviews;
@@ -96,6 +96,7 @@ class VideoGame
         $this->tags = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->updatedAt = new DateTimeImmutable();
+        $this->slug = uniqid();
     }
 
     public function getId(): ?int
@@ -216,7 +217,7 @@ class VideoGame
     }
 
     /**
-     * @return Collection<Tag>
+     * @return Collection<int, Tag>
      */
     public function getTags(): Collection
     {
@@ -224,7 +225,7 @@ class VideoGame
     }
 
     /**
-     * @return Collection<Review>
+     * @return Collection<int, Review>
      */
     public function getReviews(): Collection
     {

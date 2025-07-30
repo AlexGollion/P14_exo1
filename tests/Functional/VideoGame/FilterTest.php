@@ -12,6 +12,9 @@ use App\Model\Entity\Tag;
 
 final class FilterTest extends WebTestCase
 {
+    /**
+     * @return array<mixed>
+     */
     public static function tagProvider(): array
     {
         return [
@@ -56,6 +59,8 @@ final class FilterTest extends WebTestCase
 
    /**
     * @dataProvider tagProvider
+    * @param array<mixed> $tags
+    * @param int $expected
     */
     public function testFilterTags(array $tags, int $expected): void
     {

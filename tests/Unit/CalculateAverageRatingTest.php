@@ -11,22 +11,22 @@ use App\Rating\CountRatingsPerValue;
 
 class CalculateAverageRatingTest extends TestCase
 {
-    private $ratingHandler;
-    private $videoGame;
+    private RatingHandler $ratingHandler;
+    private VideoGame $videoGame;
 
     public function setUp(): void
     {
         $this->ratingHandler = new ratingHandler();
         $this->videoGame = new VideoGame();
     }
-    public function testAverageRatingNull()
+    public function testAverageRatingNull(): void
     {
         $this->ratingHandler->calculateAverage($this->videoGame);
         $this->assertSame(null, $this->videoGame->getAverageRating());
 
     }
     
-    public function testAverageRatingValue()
+    public function testAverageRatingValue(): void
     {
         for ($i = 0; $i < 5; $i++) {
             $review = (new Review)

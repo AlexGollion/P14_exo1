@@ -6,11 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use App\Model\Entity\User;
-
+use Doctrine\ORM\EntityManager;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class VideoGameControllerTest extends WebTestCase
 {
-    
-    public function testRateVideoGame() 
+    private EntityManager $entityManager;
+
+    public function testRateVideoGame(): void
     {
         $client = static::createClient();
 
@@ -34,7 +36,7 @@ class VideoGameControllerTest extends WebTestCase
         $this->assertGreaterThan(0, count($reviews), 'Review was not created');
     }
 
-    public function testRateVideoGameError()
+    public function testRateVideoGameError(): void
     {
         $client = static::createClient();
 
@@ -62,11 +64,14 @@ class VideoGameControllerTest extends WebTestCase
         ];
 
         foreach ($data as $key => $value) {
-            $this->submitForm($form, $client, $value, $csrfToken, $urlGenerator);
+            $this->submitForm($client, $value, $csrfToken, $urlGenerator);
         }
     }
 
-    private function submitForm($form, $client, $data, $csrfToken, $urlGenerator)
+    /**
+     * @param array{rating: int, comment: string} $data
+     */
+    private function submitForm(KernelBrowser $client, array $data, string $csrfToken, URLGeneratorInterface $urlGenerator): void
     {
         $client->request('POST', $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']), [
             'review' => [
@@ -79,7 +84,7 @@ class VideoGameControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(422);
     }
 
-    public function testRateVideoGameWithoutLogin()
+    public function testRateVideoGameWithoutLogin():void
     {
         $client = static::createClient();
 
