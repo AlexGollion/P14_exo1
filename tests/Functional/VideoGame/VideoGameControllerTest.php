@@ -2,12 +2,13 @@
 
 namespace App\Tests\Functional\VideoGame;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use App\Model\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 class VideoGameControllerTest extends WebTestCase
 {
     private EntityManager $entityManager;
@@ -25,11 +26,11 @@ class VideoGameControllerTest extends WebTestCase
 
         $form = $crawler->selectButton('Poster')->form();
         $form['review[rating]'] = 5;
-        $form['review[comment]'] = "test";
+        $form['review[comment]'] = 'test';
         $client->submit($form);
-        
+
         $this->assertTrue($client->getResponse()->isRedirect());
-        
+
         $this->entityManager = $client->getContainer()->get('doctrine')->getManager();
         $reviewRepository = $this->entityManager->getRepository('App\Model\Entity\Review');
         $reviews = $reviewRepository->findBy(['comment' => 'test']);
@@ -49,18 +50,17 @@ class VideoGameControllerTest extends WebTestCase
 
         $form = $crawler->selectButton('Poster')->form();
 
-        
         $csrfToken = $form['review[_token]']->getValue(); // Adjust field name as needed
-    
+
         $data = [
             [
                 'rating' => 6,
-                'comment' => 'test'
+                'comment' => 'test',
             ],
             [
                 'rating' => 6,
-                'comment' => ""
-            ]
+                'comment' => '',
+            ],
         ];
 
         foreach ($data as $key => $value) {
@@ -71,20 +71,20 @@ class VideoGameControllerTest extends WebTestCase
     /**
      * @param array{rating: int, comment: string} $data
      */
-    private function submitForm(KernelBrowser $client, array $data, string $csrfToken, URLGeneratorInterface $urlGenerator): void
+    private function submitForm(KernelBrowser $client, array $data, string $csrfToken, UrlGeneratorInterface $urlGenerator): void
     {
         $client->request('POST', $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']), [
             'review' => [
                 'rating' => $data['rating'], // Invalid value
                 'comment' => $data['comment'],
-                '_token' => $csrfToken // Include CSRF token if your form uses it
-            ]
+                '_token' => $csrfToken, // Include CSRF token if your form uses it
+            ],
         ]);
-        
+
         $this->assertResponseStatusCodeSame(422);
     }
 
-    public function testRateVideoGameWithoutLogin():void
+    public function testRateVideoGameWithoutLogin(): void
     {
         $client = static::createClient();
 

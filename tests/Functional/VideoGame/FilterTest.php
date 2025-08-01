@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\VideoGame;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use PHPUnit\Framework\Attributes\DataProvider;
-use App\Model\Entity\Tag;
 
 final class FilterTest extends WebTestCase
 {
@@ -18,24 +16,24 @@ final class FilterTest extends WebTestCase
     public static function tagProvider(): array
     {
         return [
-            "one tag" => [
-                "tags" => [
-                    15
+            'one tag' => [
+                'tags' => [
+                    15,
                 ],
-                "expected" => 6
+                'expected' => 6,
             ],
-            "multiple tags" => [
-                "tags" => [
+            'multiple tags' => [
+                'tags' => [
                     14,
                     5,
                 ],
-                "expected" => 5
+                'expected' => 5,
             ],
-            "no tags" => [
-                "tags" => [],
-                "expected" => 10
-            ]
-        ];    
+            'no tags' => [
+                'tags' => [],
+                'expected' => 10,
+            ],
+        ];
     }
 
     /*public function testShouldListTenVideoGames(): void
@@ -57,11 +55,11 @@ final class FilterTest extends WebTestCase
         self::assertSelectorCount(1, 'article.game-card');
     }*/
 
-   /**
-    * @dataProvider tagProvider
-    * @param array<mixed> $tags
-    * @param int $expected
-    */
+    /**
+     * @dataProvider tagProvider
+     *
+     * @param array<mixed> $tags
+     */
     public function testFilterTags(array $tags, int $expected): void
     {
         $client = static::createClient();
@@ -73,17 +71,16 @@ final class FilterTest extends WebTestCase
         $form = $crawler->selectButton('Filtrer')->form();
 
         foreach ($tags as $tag) {
-           $checkboxes = $form->get("filter[tags]");
-           if (is_array($checkboxes)) {
-               foreach ($checkboxes as $checkbox) {
-                    $value = $checkbox->availableOptionValues(); 
+            $checkboxes = $form->get('filter[tags]');
+            if (is_array($checkboxes)) {
+                foreach ($checkboxes as $checkbox) {
+                    $value = $checkbox->availableOptionValues();
                     if ($value[0] == $tag) {
-                       $checkbox->tick();
-                    }    
-               }
-           }
+                        $checkbox->tick();
+                    }
+                }
+            }
         }
-        
 
         $client->submit($form);
         $this->assertSelectorCount($expected, 'article.game-card');
