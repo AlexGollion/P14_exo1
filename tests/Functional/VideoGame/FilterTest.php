@@ -66,23 +66,20 @@ final class FilterTest extends WebTestCase
 
         $urlGenerator = $client->getContainer()->get('router.default');
 
-        $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_list'));
-
-        $form = $crawler->selectButton('Filtrer')->form();
-
-        foreach ($tags as $tag) {
-            $checkboxes = $form->get('filter[tags]');
-            if (is_array($checkboxes)) {
-                foreach ($checkboxes as $checkbox) {
-                    $value = $checkbox->availableOptionValues();
-                    if ($value[0] == $tag) {
-                        $checkbox->tick();
-                    }
-                }
-            }
+        $queryParams = [];
+        if (!empty($tags)) {
+            $queryParams['filter']['tags'] = $tags;
         }
+    
+        $url = $urlGenerator->generate('video_games_list');
+        if (!empty($queryParams)) {
+            $url .= '?' . http_build_query($queryParams);
+        }
+    
+        $crawler = $client->request(Request::METHOD_GET, $url);
 
-        $client->submit($form);
+        $this->assertResponseIsSuccessful();
         $this->assertSelectorCount($expected, 'article.game-card');
+
     }
 }

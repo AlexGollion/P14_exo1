@@ -58,6 +58,9 @@ class Review
         return $this->user;
     }
 
+    /**
+     * @param User $user
+     */
     public function setUser(User $user): Review
     {
         $this->user = $user;

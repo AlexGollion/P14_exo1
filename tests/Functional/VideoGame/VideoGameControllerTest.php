@@ -25,7 +25,7 @@ class VideoGameControllerTest extends WebTestCase
         $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
 
         $form = $crawler->selectButton('Poster')->form();
-        $form['review[rating]'] = 5;
+        $form['review[rating]'] = "5";
         $form['review[comment]'] = 'test';
         $client->submit($form);
 
