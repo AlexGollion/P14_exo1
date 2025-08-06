@@ -3,35 +3,69 @@
 namespace App\Tests\Functional\VideoGame;
 
 use App\Model\Entity\User;
+use App\Model\Entity\VideoGame;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 class VideoGameControllerTest extends WebTestCase
 {
     private EntityManager $entityManager;
 
+    private KernelBrowser $client;
+
+    protected function setUp(): void
+    {
+        $this->client = static::createClient();
+        $this->entityManager = $this->client->getContainer()->get('doctrine')->getManager();
+        $purger = new ORMPurger($this->entityManager);
+        $purger->purge();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        
+        if ($this->entityManager && $this->entityManager->isOpen()) {
+            $this->entityManager->close();
+        }
+    }
+
     public function testRateVideoGame(): void
     {
-        $client = static::createClient();
+        $user = new User();
+        $user->setEmail('test@example.com');
+        $user->setPlainPassword('password');
+        $user->setUsername('test');
 
-        $userRepository = $client->getContainer()->get('doctrine')->getManager()->getRepository(User::class);
-        $user = $userRepository->findOneByEmail('user+0@email.com');
-        $client->loginUser($user);
-        $urlGenerator = $client->getContainer()->get('router.default');
+        $videoGame = new VideoGame();
+        $videoGame->setTitle('jeu-video-4');
+        $videoGame->setDescription("test");
+        $videoGame->setReleaseDate(new \DateTimeImmutable());
+        $videoGame->setTest("test");
+        $videoGame->setRating(3);
 
-        $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
+        
+        $this->entityManager->persist($user);
+        $this->entityManager->persist($videoGame);
+        $this->entityManager->flush();
+
+        $this->client->loginUser($user);
+        $urlGenerator = $this->client->getContainer()->get('router.default');
+
+        $crawler = $this->client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]));
 
         $form = $crawler->selectButton('Poster')->form();
         $form['review[rating]'] = "5";
         $form['review[comment]'] = 'test';
-        $client->submit($form);
+        $this->client->submit($form);
 
-        $this->assertTrue($client->getResponse()->isRedirect());
+        $this->assertTrue($this->client->getResponse()->isRedirect());
 
-        $this->entityManager = $client->getContainer()->get('doctrine')->getManager();
+        $this->entityManager = $this->client->getContainer()->get('doctrine')->getManager();
         $reviewRepository = $this->entityManager->getRepository('App\Model\Entity\Review');
         $reviews = $reviewRepository->findBy(['comment' => 'test']);
         $this->assertGreaterThan(0, count($reviews), 'Review was not created');
@@ -39,14 +73,26 @@ class VideoGameControllerTest extends WebTestCase
 
     public function testRateVideoGameError(): void
     {
-        $client = static::createClient();
+        $user = new User();
+        $user->setEmail('test@example.com');
+        $user->setPlainPassword('password');
+        $user->setUsername('test');
 
-        $userRepository = $client->getContainer()->get('doctrine')->getManager()->getRepository(User::class);
-        $user = $userRepository->findOneByEmail('user+1@email.com');
-        $client->loginUser($user);
-        $urlGenerator = $client->getContainer()->get('router.default');
+        $videoGame = new VideoGame();
+        $videoGame->setTitle('jeu-video-4');
+        $videoGame->setDescription("test");
+        $videoGame->setReleaseDate(new \DateTimeImmutable());
+        $videoGame->setTest("test");
+        $videoGame->setRating(3);
 
-        $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
+        $this->entityManager->persist($user);
+        $this->entityManager->persist($videoGame);
+        $this->entityManager->flush();
+
+        $this->client->loginUser($user);
+        $urlGenerator = $this->client->getContainer()->get('router.default');
+
+        $crawler = $this->client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]));
 
         $form = $crawler->selectButton('Poster')->form();
 
@@ -64,16 +110,16 @@ class VideoGameControllerTest extends WebTestCase
         ];
 
         foreach ($data as $key => $value) {
-            $this->submitForm($client, $value, $csrfToken, $urlGenerator);
+            $this->submitForm($value, $csrfToken, $urlGenerator, $videoGame);
         }
     }
 
     /**
      * @param array{rating: int, comment: string} $data
      */
-    private function submitForm(KernelBrowser $client, array $data, string $csrfToken, UrlGeneratorInterface $urlGenerator): void
+    private function submitForm(array $data, string $csrfToken, UrlGeneratorInterface $urlGenerator, VideoGame $videoGame): void
     {
-        $client->request('POST', $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']), [
+        $this->client->request('POST', $urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]), [
             'review' => [
                 'rating' => $data['rating'], // Invalid value
                 'comment' => $data['comment'],
@@ -86,11 +132,19 @@ class VideoGameControllerTest extends WebTestCase
 
     public function testRateVideoGameWithoutLogin(): void
     {
-        $client = static::createClient();
+        $videoGame = new VideoGame();
+        $videoGame->setTitle('jeu-video-4');
+        $videoGame->setDescription("test");
+        $videoGame->setReleaseDate(new \DateTimeImmutable());
+        $videoGame->setTest("test");
+        $videoGame->setRating(3);
 
-        $urlGenerator = $client->getContainer()->get('router.default');
+        $this->entityManager->persist($videoGame);
+        $this->entityManager->flush();
 
-        $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => 'jeu-video-4']));
+        $urlGenerator = $this->client->getContainer()->get('router.default');
+
+        $crawler = $this->client->request(Request::METHOD_GET, $urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]));
 
         $this->assertSelectorNotExists('button:contains("Poster")');
     }
