@@ -9,7 +9,6 @@
     "ext-iconv": "*",
     "ext-intl": "*",
     "ext-mbstring": "*",
-    "ext-pgsql": "*",
     "doctrine/dbal": "^3",
     "doctrine/doctrine-bundle": "^2.12",
     "doctrine/doctrine-migrations-bundle": "^3.3",
