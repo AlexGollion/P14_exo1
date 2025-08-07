@@ -94,6 +94,9 @@
             "tests/bootstrap.php"
         ]
     },
+    "stenope/stenope": {
+        "version": "v0.9.0"
+    },
     "stof/doctrine-extensions-bundle": {
         "version": "1.10",
         "recipe": {

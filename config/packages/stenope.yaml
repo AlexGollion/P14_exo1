@@ -1,0 +1,2 @@
+stenope:
+  build_dir: "%kernel.project_dir%/static"
