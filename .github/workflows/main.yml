@@ -7,6 +7,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secret.DATABASE_URL }}
+      BASE_URL: ${{ secret.BASE_URL }}
+    
     strategy:
       fail-fast: true
       matrix:
@@ -38,8 +42,6 @@ jobs:
         run: composer install
 
       - name: Build
-        env:
-          DATABASE_URL: mysql://root:secret@127.0.0.1:3306/critipixel?serverVersion=8.0.32&charset=utf8mb4
         run: |
           docker compose -f "docker-compose.yml" up -d --build
           composer install
@@ -58,3 +60,9 @@ jobs:
         run: php bin/phpunit
       - name: Analysis
         run: php vendor/bin/phpstan
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
