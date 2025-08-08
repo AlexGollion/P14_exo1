@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: ${{ secret.DATABASE_URL }}
-      BASE_URL: ${{ secret.BASE_URL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BASE_URL: ${{ secrets.BASE_URL }}
     
     strategy:
       fail-fast: true
