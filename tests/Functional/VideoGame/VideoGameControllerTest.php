@@ -29,7 +29,7 @@ class VideoGameControllerTest extends WebTestCase
     {
         parent::tearDown();
         
-        if ($this->entityManager && $this->entityManager->isOpen()) {
+        if ($this->entityManager->isOpen()) {
             $this->entityManager->close();
         }
     }

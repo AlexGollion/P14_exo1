@@ -72,6 +72,10 @@ final class FilterTest extends WebTestCase
         self::assertSelectorCount(1, 'article.game-card');
     }*/
 
+
+    /**
+     * @return void
+     */
     public function testFilterTags(): void
     {
         $data = $this->generateData();
@@ -117,6 +121,10 @@ final class FilterTest extends WebTestCase
         }
     }
 
+
+    /**
+     * @return array<mixed>
+     */
     public function generateData(): array
     {
         $videoGames = [];
