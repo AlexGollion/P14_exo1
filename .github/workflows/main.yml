@@ -56,8 +56,9 @@ jobs:
       - name: Analysis
         run: php vendor/bin/phpstan
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output
+      # Le site ne peut pas etre déployer sur github pages car il n'est pas statique
+      #- name: Deploy
+      #  uses: peaceiris/actions-gh-pages@v3
+      #  with:
+      #    github_token: ${{ secrets.GITHUB_TOKEN }}
+      #    publish_dir: ./output
